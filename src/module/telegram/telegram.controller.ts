@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { TelegramService } from './telegram.service';
 import { CreateTelegramDto } from './dto/create-telegram.dto';
 import { UpdateTelegramDto } from './dto/update-telegram.dto';
+import { TelegramEntity } from "./entities/telegram.entity";
 
 @Controller('telegram')
 export class TelegramController {
@@ -13,8 +14,8 @@ export class TelegramController {
   }
 
   @Get()
-  findAll() {
-    return this.telegramService.findAll();
+  async findAll(): Promise<TelegramEntity[]> {
+    return await this.telegramService.findAll();
   }
 
   @Get(':id')

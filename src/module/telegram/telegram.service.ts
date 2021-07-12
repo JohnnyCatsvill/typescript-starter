@@ -1,15 +1,60 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTelegramDto } from './dto/create-telegram.dto';
 import { UpdateTelegramDto } from './dto/update-telegram.dto';
+import { InjectRepository } from "@nestjs/typeorm";
+import { TelegramEntity, TelegramLinkEntity } from "./entities/telegram.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class TelegramService {
-  create(createTelegramDto: CreateTelegramDto) {
-    return 'This action adds a new telegram';
+  constructor(
+    @InjectRepository(TelegramEntity)
+    private telegramRepository: Repository<TelegramEntity>,
+
+    @InjectRepository(TelegramLinkEntity)
+    private telegramLinkRepository: Repository<TelegramLinkEntity>,
+  ) {
   }
 
-  findAll() {
-    return `This action returns all telegram`;
+  async create(createTelegramDto: CreateTelegramDto) {
+
+    let telegram: TelegramEntity = {
+      title: createTelegramDto.title,
+      description: createTelegramDto.description,
+    };
+
+    let linkEntities: TelegramLinkEntity[] = [];
+
+    for (const link of createTelegramDto.links) {
+      const linkInstance: TelegramLinkEntity = {
+        link: link,
+        entity: telegram,
+      };
+      linkEntities.push(linkInstance);
+    }
+
+    //telegram.links = linkEntities; нет смсла
+
+    try{
+      await this.telegramRepository.save(telegram);
+      await this.telegramLinkRepository.save(linkEntities);
+
+    }
+    catch(e){
+      console.log(e);
+      return { success: false };
+    }
+    return { success: true };
+  }
+
+  async findAll(): Promise<TelegramEntity[]> {
+    let entities: TelegramEntity[] = await this.telegramRepository.find()
+    for (const entity of entities) {
+      let links: TelegramLinkEntity[] = await this.telegramLinkRepository.find({where: {entity: entity}});
+      entity.links = links;
+    }
+
+    return entities;
   }
 
   findOne(id: number) {
