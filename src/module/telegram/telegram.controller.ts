@@ -3,7 +3,9 @@ import { TelegramService } from './telegram.service';
 import { CreateTelegramDto } from './dto/create-telegram.dto';
 import { UpdateTelegramDto } from './dto/update-telegram.dto';
 import { TelegramEntity } from "./entities/telegram.entity";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags('telegram')
 @Controller('telegram')
 export class TelegramController {
   constructor(private readonly telegramService: TelegramService) {}
@@ -18,7 +20,7 @@ export class TelegramController {
     return await this.telegramService.findAll();
   }
 
-  @Get(':id')
+  /*@Get(':id')
   findOne(@Param('id') id: string) {
     return this.telegramService.findOne(+id);
   }
@@ -31,5 +33,5 @@ export class TelegramController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.telegramService.remove(+id);
-  }
+  }*/
 }

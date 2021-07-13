@@ -21,24 +21,15 @@ export class TelegramService {
     let telegram: TelegramEntity = {
       title: createTelegramDto.title,
       description: createTelegramDto.description,
+      links: [],
     };
 
-    let linkEntities: TelegramLinkEntity[] = [];
-
     for (const link of createTelegramDto.links) {
-      const linkInstance: TelegramLinkEntity = {
-        link: link,
-        entity: telegram,
-      };
-      linkEntities.push(linkInstance);
+      telegram.links.push(new TelegramLinkEntity(link))
     }
-
-    //telegram.links = linkEntities; нет смсла
 
     try{
       await this.telegramRepository.save(telegram);
-      await this.telegramLinkRepository.save(linkEntities);
-
     }
     catch(e){
       console.log(e);
@@ -53,7 +44,6 @@ export class TelegramService {
       let links: TelegramLinkEntity[] = await this.telegramLinkRepository.find({where: {entity: entity}});
       entity.links = links;
     }
-
     return entities;
   }
 
