@@ -165,23 +165,27 @@ export class ProjectsService {
 
   }
 
-  async findAll(search: string, filter: string): Promise<ProjectEntity[]> {
-    //let queryString = 'SELECT * FROM project_entity WHERE project_name LIKE "%?%"';
-    //await this.projectRepository.query(queryString, [search, filter]);
-    if(search == undefined) {
-      search = "";
-    }
-    if(filter == undefined) {
-      filter = "";
-    }
-    return await this.projectRepository
-      .createQueryBuilder("project_entity")
-      .where("project_name LIKE :searchString AND project_name <> :filterString")
-      .setParameters({searchString: '%' + search + '%', filterString: filter })
-      .getMany();
+  async findAll(sort: [string, "ASC"|"DESC"], range: [number, number], filter: string, res: any): Promise<any> {
 
-    //return await this.projectRepository.find({where: {project_name: search}})
-    //return await this.projectRepository.query(queryString, [search]);
+    //console.log(range[0] + " " + range[1] + "******************************************" );
+    let query = await this.projectRepository.createQueryBuilder("project_entity");
+    if (filter){
+      query.where("project_name LIKE :filterString")
+        .setParameters({filterString: '%' + filter + '%'});
+    }
+    if (range){
+      query.offset(range[0])
+        .limit(range[1]- range[0]);
+    }
+    if (sort){
+      query.addOrderBy(sort[0], sort[1]);
+    }
+
+    let queryAndCount = await query.getManyAndCount();
+
+    res.header("X-Total-Count", queryAndCount[1]);
+
+    return queryAndCount[0];
   }
 
   async findOne(id: number) {

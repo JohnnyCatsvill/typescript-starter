@@ -3,7 +3,7 @@ import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn
 @Entity()
 export class ProjectEntity {
   @PrimaryGeneratedColumn()
-  id_project?: number;
+  id?: number;
 
   @Column()
   project_name: string;

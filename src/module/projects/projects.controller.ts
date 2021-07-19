@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, Header } from "@nestjs/common";
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ApiProperty, ApiTags } from "@nestjs/swagger";
+
+let x_count;
 
 @ApiTags('projects')
 @Controller('projects')
@@ -15,8 +17,13 @@ export class ProjectsController {
   }
 
   @Get()
-  findAll(@Query('search') search, @Query('filter') filter) {
-    return this.projectsService.findAll(search, filter);
+  async findAll(@Query('sort') sort, @Query('range') range, @Query('filter') filter, @Res() res) {
+
+    //await this.projectsService.findAll(sort, range, filter, res);
+    //res.json = await this.projectsService.findAll(sort, range, filter, res);
+    //res.body.add(await this.projectsService.findAll(sort, range, filter, res));
+    res.set('Access-Control-Expose-Headers', 'X-Total-Count')
+    return res.json(await this.projectsService.findAll(sort, range, filter, res));
   }
 
   @Get(':id')

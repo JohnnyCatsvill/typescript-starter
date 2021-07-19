@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnectionOptions } from "typeorm";
 import { ProjectsModule } from './projects/projects.module';
 import { BriefModule } from './brief/brief.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -15,7 +17,9 @@ import { BriefModule } from './brief/brief.module';
         }),
     }),
     ProjectsModule,
-    BriefModule
+    BriefModule,
+    AuthModule,
+    UsersModule
   ],
   controllers: [],
   providers: [],
