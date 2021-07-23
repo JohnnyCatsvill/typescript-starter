@@ -5,7 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   ProjectEntity,
   WorkerEntity,
-  WorkerProjectEntity,
+  TeamEntity,
   WorkDirectionEntity,
   StoreSiteLinkEntity,
   LinkCaseEntity,
@@ -18,7 +18,7 @@ import {
   imports: [TypeOrmModule.forFeature([
     ProjectEntity,
     WorkerEntity,
-    WorkerProjectEntity,
+    TeamEntity,
     WorkDirectionEntity,
     StoreSiteLinkEntity,
     LinkCaseEntity,

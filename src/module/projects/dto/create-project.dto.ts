@@ -19,70 +19,70 @@ export class ClocksDTO {
   direction: string;
 }
 
-export class WorkersProjectsDTO {
+export class TeamsDTO {
   @ApiProperty()
-  workers: string[];
+  team: string[];
 
   @ApiProperty()
-  direction: string;
+  team_work_direction: string;
 }
 
 export class CreateProjectDto {
   @ApiProperty()
-  projectName: string;
-
-  @ApiProperty()
-  description: string;
-
-  @ApiProperty()
-  budget: number;
-
-  @ApiProperty()
-  nda: boolean;
-
-  @ApiProperty()
-  troubles: string;
-
-  @ApiProperty()
-  projectLink: string;
-
-  @ApiProperty()
-  presentationLink: string;
-
-  @ApiProperty()
-  timings: string;
+  project_name: string;
 
   @ApiProperty()
   otrasl: string;
 
   @ApiProperty()
+  state_of_project: string;
+
+  @ApiProperty()
   client: string;
 
   @ApiProperty()
-  status: string;
+  nda: string;
 
   @ApiProperty()
-  directions: string[];
+  budget: number;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  problems_and_solvings: string;
 
   @ApiProperty()
   technologies: string[];
 
   @ApiProperty()
-  storeSiteLinks: string[];
+  links_to_store_site: string[];
 
   @ApiProperty()
-  caseBehanceLinks: string[];
+  link_to_project_folder: string;
 
   @ApiProperty()
-  workDirections: string[];
+  link_to_presentation: string;
+
+  @ApiProperty()
+  links_to_case_behance_or_our_site: string[];
+
+  @ApiProperty({type: TeamsDTO, isArray: true})
+  teams: TeamsDTO[];
+
+  @ApiProperty()
+  directions_of_work: string[];
 
   @ApiProperty({type: NominationsDTO, isArray: true})
   nominations: NominationsDTO[];
 
-  @ApiProperty({type: ClocksDTO, isArray: true})
-  clocks: ClocksDTO[];
+  @ApiProperty()
+  terms_from: string;
 
-  @ApiProperty({type: WorkersProjectsDTO, isArray: true})
-  workerProjects: WorkersProjectsDTO[];
+  @ApiProperty()
+  terms_to: string;
+
+  @ApiProperty({type: ClocksDTO, isArray: true})
+  clock_estimation: ClocksDTO[];
 }
 

@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class ProjectEntity {
@@ -9,55 +9,76 @@ export class ProjectEntity {
   project_name: string;
 
   @Column()
-  description?: string;
+  otrasl: string;
+
+  @Column()
+  state_of_project: string;
+
+  @Column()
+  client: string;
+
+  @Column()
+  nda: string;
 
   @Column()
   budget?: number;
 
   @Column()
-  nda: boolean;
+  description?: string;
 
   @Column()
-  troubles?: string;
+  problems_and_solvings?: string;
 
-  @Column()
-  projectLink: string;
-
-  @Column()
-  presentationLink?: string;
-
-  @Column()
-  timings?: string;
-
-  @Column()
-  otrasl: string;
-
-  @Column()
-  status: string;
-
-  @Column()
-  client: string;
-
-  @OneToMany(type => WorkerProjectEntity, workerProject => workerProject.directionName, {cascade: true})
-  workerProjects?: WorkerProjectEntity[];
-
-  @OneToMany(type => TechnologyEntity, technology => technology.technologies, {cascade: true})
+  @OneToMany(type => TechnologyEntity, tech => tech.projects, {cascade: true})
   technologies?: TechnologyEntity[];
 
-  @OneToMany(type => StoreSiteLinkEntity, link => link.link, {cascade: true})
-  storeSiteLinks?: StoreSiteLinkEntity[];
+  @OneToMany(type => StoreSiteLinkEntity, link => link.projects, {cascade: true})
+  links_to_store_site?: StoreSiteLinkEntity[];
 
-  @OneToMany(type => LinkCaseEntity, link => link.linkCase, {cascade: true})
-  caseBehanceLinks?: LinkCaseEntity[];
 
-  @OneToMany(type => WorkDirectionEntity, direction => direction.workDirection, {cascade: true})
-  workDirections?: WorkDirectionEntity[];
+  @Column()
+  link_to_project_folder: string;
 
-  @OneToMany(type => NominationEntity, nomination => nomination.nominationTitle, {cascade: true})
+  @Column()
+  link_to_presentation?: string;
+
+  @OneToMany(type => LinkCaseEntity, link => link.projects, {cascade: true})
+  links_to_case_behance_or_our_site?: LinkCaseEntity[];
+
+  @OneToMany(type => TeamEntity, workerProject => workerProject.projects, {cascade: true})
+  teams?: TeamEntity[];
+
+  @OneToMany(type => WorkDirectionEntity, direction => direction.projects, {cascade: true})
+  directions_of_work?: WorkDirectionEntity[];
+
+  @OneToMany(type => NominationEntity, nomination => nomination.projects, {cascade: true})
   nominations?: NominationEntity[];
 
-  @OneToMany(type => ClockEntity, clock => clock.clock, {cascade: true})
-  workTimes?: ClockEntity[];
+  @Column()
+  terms_from?: string;
+
+  @Column()
+  terms_to?: string;
+
+  @OneToMany(type => ClockEntity, clock => clock.projects, {cascade: true})
+  clock_estimation?: ClockEntity[];
+}
+
+
+
+@Entity()
+export class TeamEntity {
+  @PrimaryGeneratedColumn()
+  id_team?: number;
+
+  @Column()
+  team_work_direction: string;
+
+  @OneToMany(type => WorkerEntity, worker => worker.team, {cascade: true})
+  workers?: WorkerEntity[];
+
+  @ManyToOne(type => ProjectEntity, project => project.teams, {onUpdate: "CASCADE", onDelete: "CASCADE"})
+  projects?: ProjectEntity;
 }
 
 @Entity()
@@ -68,24 +89,10 @@ export class WorkerEntity {
   @Column()
   worker: string;
 
-  @OneToMany(type => WorkerProjectEntity, workerProject => workerProject.directionName, {cascade: true})
-  workerProjects?: WorkerProjectEntity[];
+  @ManyToOne(type => TeamEntity, workerProject => workerProject.workers, {onUpdate: "CASCADE", onDelete: "CASCADE"})
+  team?: TeamEntity;
 }
 
-@Entity()
-export class WorkerProjectEntity {
-  @PrimaryGeneratedColumn()
-  id_workerProjectEntity?: number;
-
-  @Column()
-  directionName: string;
-
-  @ManyToOne(type => WorkerEntity, worker => worker.workerProjects, {onUpdate: "CASCADE", onDelete: "CASCADE"})
-  worker?: WorkerEntity;
-
-  @ManyToOne(type => ProjectEntity, project => project.workerProjects, {onUpdate: "CASCADE", onDelete: "CASCADE"})
-  projectName?: ProjectEntity;
-}
 
 @Entity()
 export class TechnologyEntity {
@@ -93,7 +100,7 @@ export class TechnologyEntity {
   id_technology?: number;
 
   @Column()
-  technologies: string;
+  technology: string;
 
   @ManyToOne(type => ProjectEntity, project => project.technologies, {onUpdate: "CASCADE", onDelete: "CASCADE"})
   projects?: ProjectEntity;
@@ -107,31 +114,31 @@ export class StoreSiteLinkEntity {
   @Column()
   link: string;
 
-  @ManyToOne(type => ProjectEntity, project => project.storeSiteLinks, {onUpdate: "CASCADE", onDelete: "CASCADE"})
+  @ManyToOne(type => ProjectEntity, project => project.links_to_store_site, {onUpdate: "CASCADE", onDelete: "CASCADE"})
   projects?: ProjectEntity;
 }
 
 @Entity()
 export class LinkCaseEntity {
   @PrimaryGeneratedColumn()
-  id_linkCase?: number;
+  id_link_case?: number;
 
   @Column()
-  linkCase: string;
+  link_case: string;
 
-  @ManyToOne(type => ProjectEntity, project => project.caseBehanceLinks, {onUpdate: "CASCADE", onDelete: "CASCADE"})
+  @ManyToOne(type => ProjectEntity, project => project.links_to_case_behance_or_our_site, {onUpdate: "CASCADE", onDelete: "CASCADE"})
   projects?: ProjectEntity;
 }
 
 @Entity()
 export class WorkDirectionEntity {
   @PrimaryGeneratedColumn()
-  id_workDirection?: number;
+  id_work_direction?: number;
 
   @Column()
-  workDirection: string;
+  work_direction: string;
 
-  @ManyToOne(type => ProjectEntity, project => project.workDirections, {onUpdate: "CASCADE", onDelete: "CASCADE"})
+  @ManyToOne(type => ProjectEntity, project => project.directions_of_work, {onUpdate: "CASCADE", onDelete: "CASCADE"})
   projects?: ProjectEntity;
 }
 
@@ -141,7 +148,7 @@ export class NominationEntity {
   id_nomination?: number;
 
   @Column()
-  nominationTitle: string;
+  title: string;
 
   @Column()
   description: string;
@@ -164,6 +171,6 @@ export class ClockEntity {
   @Column()
   direction: string;
 
-  @ManyToOne(type => ProjectEntity, project => project.workTimes, {onUpdate: "CASCADE", onDelete: "CASCADE"})
+  @ManyToOne(type => ProjectEntity, project => project.clock_estimation, {onUpdate: "CASCADE", onDelete: "CASCADE"})
   projects?: ProjectEntity;
 }

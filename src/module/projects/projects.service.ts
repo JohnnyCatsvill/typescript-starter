@@ -11,7 +11,7 @@ import {
   LinkCaseEntity,
   StoreSiteLinkEntity,
   WorkDirectionEntity,
-  WorkerProjectEntity,
+  TeamEntity,
   WorkerEntity
 } from "./entities/project.entity";
 
@@ -24,8 +24,8 @@ export class ProjectsService {
     @InjectRepository(WorkerEntity)
     private workerRepository: Repository<WorkerEntity>,
 
-    @InjectRepository(WorkerProjectEntity)
-    private workerProjectRepository: Repository<WorkerProjectEntity>,
+    @InjectRepository(TeamEntity)
+    private teamRepository: Repository<TeamEntity>,
 
     @InjectRepository(TechnologyEntity)
     private technologyRepository: Repository<TechnologyEntity>,
@@ -50,110 +50,120 @@ export class ProjectsService {
   async create(createProjectDto: CreateProjectDto): Promise<{ success: boolean }> {
     let project = this.projectRepository.create(
       {
-        project_name: createProjectDto.projectName,
+        project_name: createProjectDto.project_name,
         nda: createProjectDto.nda,
-        projectLink: createProjectDto.projectLink,
+        link_to_project_folder: createProjectDto.link_to_project_folder,
         budget: createProjectDto.budget,
         client: createProjectDto.client,
         description: createProjectDto.description,
         otrasl: createProjectDto.otrasl,
-        presentationLink: createProjectDto.presentationLink,
-        status: createProjectDto.status,
-        timings: createProjectDto.timings,
-        troubles: createProjectDto.troubles
+        link_to_presentation: createProjectDto.link_to_presentation,
+        state_of_project: createProjectDto.state_of_project,
+        terms_from: createProjectDto.terms_from,
+        terms_to: createProjectDto.terms_to,
+        problems_and_solvings: createProjectDto.problems_and_solvings
       }
     )
 
     const technologiesList: TechnologyEntity[] = [];
-    for (const technology of createProjectDto.technologies) {
-      const technologyEntinity = new TechnologyEntity();
-      technologyEntinity.technologies = technology;
-      technologyEntinity.projects = project;
-      technologiesList.push(technologyEntinity);
+    if (createProjectDto.technologies){
+      for (const technology of createProjectDto.technologies) {
+        const technologyEntinity = new TechnologyEntity();
+        technologyEntinity.technology = technology;
+        technologyEntinity.projects = project;
+        technologiesList.push(technologyEntinity);
+      }
     }
 
     const clocksList: ClockEntity[] = [];
-    for (const some of createProjectDto.clocks) {
-      const clockEntinity = new ClockEntity();
-      clockEntinity.clock = some.clock;
-      clockEntinity.direction = some.direction;
-      clockEntinity.projects = project;
-      clocksList.push(clockEntinity);
+    if (createProjectDto.clock_estimation){
+      for (const some of createProjectDto.clock_estimation) {
+        const clockEntinity = new ClockEntity();
+        clockEntinity.clock = some.clock;
+        clockEntinity.direction = some.direction;
+        clockEntinity.projects = project;
+        clocksList.push(clockEntinity);
+      }
     }
 
     const caseBehanceList: LinkCaseEntity[] = [];
-    for (const some of createProjectDto.caseBehanceLinks) {
-      const linkCaseEntinity = new LinkCaseEntity();
-      linkCaseEntinity.linkCase = some;
-      linkCaseEntinity.projects = project;
-      caseBehanceList.push(linkCaseEntinity);
+    if (createProjectDto.links_to_case_behance_or_our_site){
+      for (const some of createProjectDto.links_to_case_behance_or_our_site) {
+        const linkCaseEntinity = new LinkCaseEntity();
+        linkCaseEntinity.link_case = some;
+        linkCaseEntinity.projects = project;
+        caseBehanceList.push(linkCaseEntinity);
+      }
     }
 
     const nominationsList: NominationEntity[] = [];
-    for (const some of createProjectDto.nominations) {
-      const nominationsEntinity = new NominationEntity();
-      nominationsEntinity.nominationTitle = some.title;
-      nominationsEntinity.description = some.description;
-      nominationsEntinity.link = some.link;
-      nominationsEntinity.projects = project;
-      nominationsList.push(nominationsEntinity);
+    if (createProjectDto.nominations){
+      for (const some of createProjectDto.nominations) {
+        const nominationsEntinity = new NominationEntity();
+        nominationsEntinity.title = some.title;
+        nominationsEntinity.description = some.description;
+        nominationsEntinity.link = some.link;
+        nominationsEntinity.projects = project;
+        nominationsList.push(nominationsEntinity);
+      }
     }
 
     const storeSiteList: StoreSiteLinkEntity[] = [];
-    for (const some of createProjectDto.storeSiteLinks) {
-      const storeSiteEntinity = new StoreSiteLinkEntity();
-      storeSiteEntinity.link = some;
-      storeSiteEntinity.projects = project;
-      storeSiteList.push(storeSiteEntinity);
+    if (createProjectDto.links_to_store_site){
+      for (const some of createProjectDto.links_to_store_site) {
+        const storeSiteEntinity = new StoreSiteLinkEntity();
+        storeSiteEntinity.link = some;
+        storeSiteEntinity.projects = project;
+        storeSiteList.push(storeSiteEntinity);
+      }
     }
 
     const workDirectionsList: WorkDirectionEntity[] = [];
-    for (const some of createProjectDto.workDirections) {
-      const workDirectionsEntinity = new WorkDirectionEntity();
-      workDirectionsEntinity.workDirection = some;
-      workDirectionsEntinity.projects = project;
-      workDirectionsList.push(workDirectionsEntinity);
+    if (createProjectDto.directions_of_work){
+      for (const some of createProjectDto.directions_of_work) {
+        const workDirectionsEntinity = new WorkDirectionEntity();
+        workDirectionsEntinity.work_direction = some;
+        workDirectionsEntinity.projects = project;
+        workDirectionsList.push(workDirectionsEntinity);
+      }
     }
 
-    const workerProjectsList: WorkerProjectEntity[] = [];
-    for (const some of createProjectDto.workerProjects) {
-      for (const worker of some.workers) {
-        const workerProjectsEntinity = new WorkerProjectEntity();
-        workerProjectsEntinity.directionName = some.direction
-        const workerEntinity = new WorkerEntity()
-        workerEntinity.worker = worker;
-        try{
-          this.workerRepository.save(workerEntinity);
+    const workerProjectsList: TeamEntity[] = [];
+    if (createProjectDto.teams){
+      for (const some of createProjectDto.teams) {
+        const workerProjectsEntinity = new TeamEntity();
+        workerProjectsEntinity.workers = [];
+        workerProjectsEntinity.team_work_direction = some.team_work_direction;
+
+        for (const worker of some.team) {
+          const workerEntinity = new WorkerEntity();
+          workerEntinity.worker = worker;
+          try{
+            this.workerRepository.save(workerEntinity);
+          }
+          catch (e) {
+            console.log(e);
+            return {success: false};
+          }
+          workerProjectsEntinity.workers.push(workerEntinity);
         }
-        catch (e) {
-          console.log(e);
-          return {success: false};
-        }
-        workerProjectsEntinity.worker = workerEntinity;
-        workerProjectsEntinity.projectName = project;
+        workerProjectsEntinity.projects = project;
         workerProjectsList.push(workerProjectsEntinity);
       }
     }
 
-    project.workerProjects = workerProjectsList;
-    project.workTimes = clocksList;
-    project.workDirections = workDirectionsList;
-    project.storeSiteLinks = storeSiteList;
+    project.teams = workerProjectsList;
+    project.clock_estimation = clocksList;
+    project.directions_of_work = workDirectionsList;
+    project.links_to_store_site = storeSiteList;
     project.nominations = nominationsList;
-    project.caseBehanceLinks = caseBehanceList;
+    project.links_to_case_behance_or_our_site = caseBehanceList;
     project.technologies = technologiesList;
 
-    console.log(createProjectDto.projectName + ' ТУТ ТУТ ОНО ТУТ ТУТ');
+    console.log(createProjectDto.project_name + ' ТУТ ТУТ ОНО ТУТ ТУТ');
 
     try{
-      await this.projectRepository.save(project);/*
-      this.clockRepository.save(clocksList);
-      this.linkCaseRepository.save(caseBehanceList);
-      this.nominationRepository.save(nominationsList);
-      this.storeSiteRepository.save(storeSiteList);
-      this.technologyRepository.save(technologiesList);
-      this.workDirectionRepository.save(workDirectionsList);
-      this.workerProjectRepository.save(workerProjectsList);*/
+      await this.projectRepository.save(project);
 
       return {success: true};
     }
@@ -161,17 +171,13 @@ export class ProjectsService {
       console.log(e);
       return {success: false};
     }
-
-
   }
 
-  async findAll(sort: [string, "ASC"|"DESC"], range: [number, number], filter: string, res: any): Promise<any> {
-
-    //console.log(range[0] + " " + range[1] + "******************************************" );
+  async findAll(sort: [string, "ASC"|"DESC"], range: [number, number], filter: [string, string], res: any): Promise<any> {
     let query = await this.projectRepository.createQueryBuilder("project_entity");
     if (filter){
-      query.where("project_name LIKE :filterString")
-        .setParameters({filterString: '%' + filter + '%'});
+      query.where(":columnString LIKE :filterString")
+        .setParameters({filterString: '%' + filter[1] + '%', columnString: filter[0]});
     }
     if (range){
       query.offset(range[0])
@@ -180,33 +186,142 @@ export class ProjectsService {
     if (sort){
       query.addOrderBy(sort[0], sort[1]);
     }
-
     let queryAndCount = await query.getManyAndCount();
-
     res.header("X-Total-Count", queryAndCount[1]);
-
     return queryAndCount[0];
   }
 
   async findOne(id: number) {
-    let project: ProjectEntity = await this.projectRepository.findOne({ where: { id_project: id } });
+    let project: ProjectEntity = await this.projectRepository.findOne({ where: { id: id } });
 
-    project.workerProjects = await this.workerProjectRepository.find({where: {projectName: project}});
-    project.workTimes = await this.clockRepository.find({where: {projects: project}});
-    project.workDirections = await this.workDirectionRepository.find({where: {projects: project}});
-    project.storeSiteLinks = await this.storeSiteRepository.find({where: {projects: project}});
+    let teams: TeamEntity[] = await this.teamRepository.find({where: {projects: project}});
+    for (const i in teams){
+      const team: WorkerEntity[] = await this.workerRepository.find( {where: {team: teams[i]}});
+      teams[i].workers = team;
+    }
+
+    project.teams = teams;
+    project.clock_estimation = await this.clockRepository.find({where: {projects: project}});
+    project.directions_of_work = await this.workDirectionRepository.find({where: {projects: project}});
+    project.links_to_store_site = await this.storeSiteRepository.find({where: {projects: project}});
     project.nominations = await this.nominationRepository.find({where: {projects: project}});
-    project.caseBehanceLinks = await this.linkCaseRepository.find({where: {projects: project}});
+    project.links_to_case_behance_or_our_site = await this.linkCaseRepository.find({where: {projects: project}});
     project.technologies = await this.technologyRepository.find({where: {projects: project}});
 
     return project;
   }
 
-  /*update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async remove(id: number) {
+    return this.projectRepository.delete({id: id});
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} project`;
-  }*/
+  async update(number: number, createProjectDto: UpdateProjectDto) {
+    let project = this.projectRepository.create(
+      {
+        id: createProjectDto.id,
+        project_name: createProjectDto.project_name,
+        nda: createProjectDto.nda,
+        link_to_project_folder: createProjectDto.link_to_project_folder,
+        budget: createProjectDto.budget,
+        client: createProjectDto.client,
+        description: createProjectDto.description,
+        otrasl: createProjectDto.otrasl,
+        link_to_presentation: createProjectDto.link_to_presentation,
+        state_of_project: createProjectDto.state_of_project,
+        terms_from: createProjectDto.terms_from,
+        terms_to: createProjectDto.terms_to,
+        problems_and_solvings: createProjectDto.problems_and_solvings
+      }
+    )
+
+    const technologiesList: TechnologyEntity[] = [];
+    for (const technology of createProjectDto.technologies) {
+      const technologyEntinity = new TechnologyEntity();
+      technologyEntinity.technology = technology;
+      technologyEntinity.projects = project;
+      technologiesList.push(technologyEntinity);
+    }
+
+    const clocksList: ClockEntity[] = [];
+    for (const some of createProjectDto.clock_estimation) {
+      const clockEntinity = new ClockEntity();
+      clockEntinity.clock = some.clock;
+      clockEntinity.direction = some.direction;
+      clockEntinity.projects = project;
+      clocksList.push(clockEntinity);
+    }
+
+    const caseBehanceList: LinkCaseEntity[] = [];
+    for (const some of createProjectDto.links_to_case_behance_or_our_site) {
+      const linkCaseEntinity = new LinkCaseEntity();
+      linkCaseEntinity.link_case = some;
+      linkCaseEntinity.projects = project;
+      caseBehanceList.push(linkCaseEntinity);
+    }
+
+    const nominationsList: NominationEntity[] = [];
+    for (const some of createProjectDto.nominations) {
+      const nominationsEntinity = new NominationEntity();
+      nominationsEntinity.title = some.title;
+      nominationsEntinity.description = some.description;
+      nominationsEntinity.link = some.link;
+      nominationsEntinity.projects = project;
+      nominationsList.push(nominationsEntinity);
+    }
+
+    const storeSiteList: StoreSiteLinkEntity[] = [];
+    for (const some of createProjectDto.links_to_store_site) {
+      const storeSiteEntinity = new StoreSiteLinkEntity();
+      storeSiteEntinity.link = some;
+      storeSiteEntinity.projects = project;
+      storeSiteList.push(storeSiteEntinity);
+    }
+
+    const workDirectionsList: WorkDirectionEntity[] = [];
+    for (const some of createProjectDto.directions_of_work) {
+      const workDirectionsEntinity = new WorkDirectionEntity();
+      workDirectionsEntinity.work_direction = some;
+      workDirectionsEntinity.projects = project;
+      workDirectionsList.push(workDirectionsEntinity);
+    }
+
+    const workerProjectsList: TeamEntity[] = [];
+    for (const some of createProjectDto.teams) {
+      for (const worker of some.team) {
+        const workerProjectsEntinity = new TeamEntity();
+        workerProjectsEntinity.workers = [];
+        workerProjectsEntinity.team_work_direction = some.team_work_direction;
+        const workerEntinity = new WorkerEntity();
+        workerEntinity.worker = worker;
+        try{
+          this.workerRepository.save(workerEntinity);
+        }
+        catch (e) {
+          console.log(e);
+          return {success: false};
+        }
+        workerProjectsEntinity.workers.push(workerEntinity);
+        workerProjectsEntinity.projects = project;
+        workerProjectsList.push(workerProjectsEntinity);
+      }
+    }
+
+    project.teams = workerProjectsList;
+    project.clock_estimation = clocksList;
+    project.directions_of_work = workDirectionsList;
+    project.links_to_store_site = storeSiteList;
+    project.nominations = nominationsList;
+    project.links_to_case_behance_or_our_site = caseBehanceList;
+    project.technologies = technologiesList;
+
+    try{
+      await this.projectRepository.save(project);
+
+      return {success: true};
+    }
+    catch (e){
+      console.log(e);
+      return {success: false};
+    }
+  }
 }
