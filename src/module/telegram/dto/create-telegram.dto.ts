@@ -6,7 +6,4 @@ export class CreateTelegramDto {
 
   @ApiProperty({type: String})
   description: string;
-
-  @ApiProperty({ type: String, isArray: true })
-  links: string[];
 }

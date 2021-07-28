@@ -10,23 +10,4 @@ export class TelegramEntity {
 
   @Column()
   description: string;
-
-  @OneToMany(type => TelegramLinkEntity, v => v.entity, {cascade: true})
-  links?: TelegramLinkEntity[];
-}
-
-@Entity()
-export class TelegramLinkEntity {
-  constructor(link: string) {
-    this.link = link;
-  }
-
-  @PrimaryGeneratedColumn()
-  id?: number;
-
-  @Column()
-  link: string;
-
-  @ManyToOne(()=> TelegramEntity, v => v.links, {onUpdate: "CASCADE", onDelete:"CASCADE"})
-  entity: TelegramEntity;
 }

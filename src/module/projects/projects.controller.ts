@@ -29,11 +29,6 @@ export class ProjectsController {
     return await this.projectsService.findOne(+id);
   }
 
-  /*@Get(':id')
-  findMany(@Param('id') id: [number]) {
-    return this.projectsService.findMany(id);
-  }*/
-
   @Put(':id')
   update(@Param('id') id: number, @Body() updateProjectDto: UpdateProjectDto) {
     return this.projectsService.update(+id, updateProjectDto);

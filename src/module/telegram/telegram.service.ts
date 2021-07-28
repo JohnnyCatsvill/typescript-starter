@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateTelegramDto } from './dto/create-telegram.dto';
 import { UpdateTelegramDto } from './dto/update-telegram.dto';
 import { InjectRepository } from "@nestjs/typeorm";
-import { TelegramEntity, TelegramLinkEntity } from "./entities/telegram.entity";
+import { TelegramEntity} from "./entities/telegram.entity";
 import { Repository } from "typeorm";
 
 @Injectable()
@@ -10,9 +10,6 @@ export class TelegramService {
   constructor(
     @InjectRepository(TelegramEntity)
     private telegramRepository: Repository<TelegramEntity>,
-
-    @InjectRepository(TelegramLinkEntity)
-    private telegramLinkRepository: Repository<TelegramLinkEntity>,
   ) {
   }
 
@@ -21,12 +18,7 @@ export class TelegramService {
     let telegram: TelegramEntity = {
       title: createTelegramDto.title,
       description: createTelegramDto.description,
-      links: [],
     };
-
-    for (const link of createTelegramDto.links) {
-      telegram.links.push(new TelegramLinkEntity(link))
-    }
 
     try{
       await this.telegramRepository.save(telegram);
@@ -38,24 +30,46 @@ export class TelegramService {
     return { success: true };
   }
 
-  async findAll(): Promise<TelegramEntity[]> {
-    let entities: TelegramEntity[] = await this.telegramRepository.find()
-    for (const entity of entities) {
-      let links: TelegramLinkEntity[] = await this.telegramLinkRepository.find({where: {entity: entity}});
-      entity.links = links;
+  async findAll(sort: [string, "ASC"|"DESC"], range: [number, number], filter: [string, string], res: any): Promise<any> {
+    let query = await this.telegramRepository.createQueryBuilder("telegram_entity");
+    if (filter){
+      query.where(":columnString LIKE :filterString")
+        .setParameters({filterString: '%' + filter[1] + '%', columnString: filter[0]});
     }
-    return entities;
+    if (range){
+      query.offset(range[0])
+        .limit(range[1]- range[0]);
+    }
+    if (sort){
+      query.addOrderBy(sort[0], sort[1]);
+    }
+    let queryAndCount = await query.getManyAndCount();
+    res.header("X-Total-Count", queryAndCount[1]);
+    return queryAndCount[0];
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} telegram`;
+  async findOne(id: number) {
+    return await this.telegramRepository.findOne({where: {id: id}});
   }
 
-  update(id: number, updateTelegramDto: UpdateTelegramDto) {
-    return `This action updates a #${id} telegram`;
+  async update(id: number, updateTelegramDto: UpdateTelegramDto) {
+    let telegram: TelegramEntity = {
+      id: updateTelegramDto.id,
+      title: updateTelegramDto.title,
+      description: updateTelegramDto.description,
+    };
+
+    try{
+      await this.telegramRepository.save(telegram);
+    }
+    catch(e){
+      console.log(e);
+      return { success: false };
+    }
+    return { success: true };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} telegram`;
+  async remove(id: number) {
+    return this.telegramRepository.delete({id: id});
   }
 }
