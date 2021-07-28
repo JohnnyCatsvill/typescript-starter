@@ -47,7 +47,7 @@ export class ProjectsService {
   ) {
   }
 
-  async create(createProjectDto: CreateProjectDto): Promise<{ success: boolean }> {
+  async create(createProjectDto: CreateProjectDto): Promise<any> {
     let project = this.projectRepository.create(
       {
         project_name: createProjectDto.project_name,
@@ -67,10 +67,10 @@ export class ProjectsService {
 
     const technologiesList: TechnologyEntity[] = [];
     if (createProjectDto.technologies){
-      for (const technology of createProjectDto.technologies) {
+      for (const some of createProjectDto.technologies) {
         const technologyEntinity = new TechnologyEntity();
-        technologyEntinity.technology = technology;
-        technologyEntinity.projects = project;
+        technologyEntinity.technology = some.technology;
+        //technologyEntinity.projects = project;
         technologiesList.push(technologyEntinity);
       }
     }
@@ -81,7 +81,7 @@ export class ProjectsService {
         const clockEntinity = new ClockEntity();
         clockEntinity.clock = some.clock;
         clockEntinity.direction = some.direction;
-        clockEntinity.projects = project;
+        //clockEntinity.projects = project;
         clocksList.push(clockEntinity);
       }
     }
@@ -90,8 +90,8 @@ export class ProjectsService {
     if (createProjectDto.links_to_case_behance_or_our_site){
       for (const some of createProjectDto.links_to_case_behance_or_our_site) {
         const linkCaseEntinity = new LinkCaseEntity();
-        linkCaseEntinity.link_case = some;
-        linkCaseEntinity.projects = project;
+        linkCaseEntinity.link_case = some.link_case;
+        //linkCaseEntinity.projects = project;
         caseBehanceList.push(linkCaseEntinity);
       }
     }
@@ -103,7 +103,7 @@ export class ProjectsService {
         nominationsEntinity.title = some.title;
         nominationsEntinity.description = some.description;
         nominationsEntinity.link = some.link;
-        nominationsEntinity.projects = project;
+        //nominationsEntinity.projects = project;
         nominationsList.push(nominationsEntinity);
       }
     }
@@ -112,8 +112,8 @@ export class ProjectsService {
     if (createProjectDto.links_to_store_site){
       for (const some of createProjectDto.links_to_store_site) {
         const storeSiteEntinity = new StoreSiteLinkEntity();
-        storeSiteEntinity.link = some;
-        storeSiteEntinity.projects = project;
+        storeSiteEntinity.link = some.link;
+        //storeSiteEntinity.projects = project;
         storeSiteList.push(storeSiteEntinity);
       }
     }
@@ -122,8 +122,8 @@ export class ProjectsService {
     if (createProjectDto.directions_of_work){
       for (const some of createProjectDto.directions_of_work) {
         const workDirectionsEntinity = new WorkDirectionEntity();
-        workDirectionsEntinity.work_direction = some;
-        workDirectionsEntinity.projects = project;
+        workDirectionsEntinity.work_direction = some.work_direction;
+        //workDirectionsEntinity.projects = project;
         workDirectionsList.push(workDirectionsEntinity);
       }
     }
@@ -135,19 +135,19 @@ export class ProjectsService {
         workerProjectsEntinity.workers = [];
         workerProjectsEntinity.team_work_direction = some.team_work_direction;
 
-        for (const worker of some.team) {
+        for (const worker of some.workers) {
           const workerEntinity = new WorkerEntity();
-          workerEntinity.worker = worker;
-          try{
+          workerEntinity.worker = worker.worker;
+          /*try{
             this.workerRepository.save(workerEntinity);
           }
           catch (e) {
             console.log(e);
             return {success: false};
-          }
+          }*/
           workerProjectsEntinity.workers.push(workerEntinity);
         }
-        workerProjectsEntinity.projects = project;
+        //workerProjectsEntinity.projects = project;
         workerProjectsList.push(workerProjectsEntinity);
       }
     }
@@ -165,7 +165,7 @@ export class ProjectsService {
     try{
       await this.projectRepository.save(project);
 
-      return {success: true};
+      return project;
     }
     catch (e){
       console.log(e);
@@ -235,9 +235,9 @@ export class ProjectsService {
     )
 
     const technologiesList: TechnologyEntity[] = [];
-    for (const technology of createProjectDto.technologies) {
+    for (const some of createProjectDto.technologies) {
       const technologyEntinity = new TechnologyEntity();
-      technologyEntinity.technology = technology;
+      technologyEntinity.technology = some.technology;
       technologyEntinity.projects = project;
       technologiesList.push(technologyEntinity);
     }
@@ -254,7 +254,7 @@ export class ProjectsService {
     const caseBehanceList: LinkCaseEntity[] = [];
     for (const some of createProjectDto.links_to_case_behance_or_our_site) {
       const linkCaseEntinity = new LinkCaseEntity();
-      linkCaseEntinity.link_case = some;
+      linkCaseEntinity.link_case = some.link_case;
       linkCaseEntinity.projects = project;
       caseBehanceList.push(linkCaseEntinity);
     }
@@ -272,7 +272,7 @@ export class ProjectsService {
     const storeSiteList: StoreSiteLinkEntity[] = [];
     for (const some of createProjectDto.links_to_store_site) {
       const storeSiteEntinity = new StoreSiteLinkEntity();
-      storeSiteEntinity.link = some;
+      storeSiteEntinity.link = some.link;
       storeSiteEntinity.projects = project;
       storeSiteList.push(storeSiteEntinity);
     }
@@ -280,28 +280,23 @@ export class ProjectsService {
     const workDirectionsList: WorkDirectionEntity[] = [];
     for (const some of createProjectDto.directions_of_work) {
       const workDirectionsEntinity = new WorkDirectionEntity();
-      workDirectionsEntinity.work_direction = some;
+      workDirectionsEntinity.work_direction = some.work_direction;
       workDirectionsEntinity.projects = project;
       workDirectionsList.push(workDirectionsEntinity);
     }
 
     const workerProjectsList: TeamEntity[] = [];
-    for (const some of createProjectDto.teams) {
-      for (const worker of some.team) {
+    if (createProjectDto.teams){
+      for (const some of createProjectDto.teams) {
         const workerProjectsEntinity = new TeamEntity();
         workerProjectsEntinity.workers = [];
         workerProjectsEntinity.team_work_direction = some.team_work_direction;
-        const workerEntinity = new WorkerEntity();
-        workerEntinity.worker = worker;
-        try{
-          this.workerRepository.save(workerEntinity);
+
+        for (const worker of some.workers) {
+          const workerEntinity = new WorkerEntity();
+          workerEntinity.worker = worker.worker;
+          workerProjectsEntinity.workers.push(workerEntinity);
         }
-        catch (e) {
-          console.log(e);
-          return {success: false};
-        }
-        workerProjectsEntinity.workers.push(workerEntinity);
-        workerProjectsEntinity.projects = project;
         workerProjectsList.push(workerProjectsEntinity);
       }
     }
@@ -317,7 +312,7 @@ export class ProjectsService {
     try{
       await this.projectRepository.save(project);
 
-      return {success: true};
+      return this.projectRepository.findOne({where: {id: number}});
     }
     catch (e){
       console.log(e);

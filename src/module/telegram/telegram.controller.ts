@@ -2,10 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, Put } fr
 import { TelegramService } from './telegram.service';
 import { CreateTelegramDto } from './dto/create-telegram.dto';
 import { UpdateTelegramDto } from './dto/update-telegram.dto';
-import { TelegramEntity } from "./entities/telegram.entity";
 import { ApiTags } from "@nestjs/swagger";
-import { CreateProjectDto } from "../projects/dto/create-project.dto";
-import { UpdateProjectDto } from "../projects/dto/update-project.dto";
 
 @ApiTags('telegrams')
 @Controller('telegrams')
@@ -29,8 +26,8 @@ export class TelegramController {
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.telegramService.update(+id, updateProjectDto);
+  update(@Param('id') id: number, @Body() updateTelegramDto: UpdateTelegramDto) {
+    return this.telegramService.update(+id, updateTelegramDto);
   }
 
   @Delete(':id')

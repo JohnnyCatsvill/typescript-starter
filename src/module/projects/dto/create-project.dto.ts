@@ -21,10 +21,35 @@ export class ClocksDTO {
 
 export class TeamsDTO {
   @ApiProperty()
-  team: string[];
+  worker: string;
+}
+
+export class TeamWorkDirectionsDTO {
+  @ApiProperty({type: TeamsDTO, isArray: true})
+  workers: TeamsDTO[];
 
   @ApiProperty()
   team_work_direction: string;
+}
+
+export class TechnologiesDTO {
+  @ApiProperty()
+  technology: string;
+}
+
+export class LinksToStoreSiteDTO {
+  @ApiProperty()
+  link: string;
+}
+
+export class LinksToCaseBehanceDTO {
+  @ApiProperty()
+  link_case: string;
+}
+
+export class DirectionsOfWorkDTO {
+  @ApiProperty()
+  work_direction: string;
 }
 
 export class CreateProjectDto {
@@ -52,11 +77,11 @@ export class CreateProjectDto {
   @ApiProperty()
   problems_and_solvings: string;
 
-  @ApiProperty()
-  technologies: string[];
+  @ApiProperty({type: TechnologiesDTO, isArray: true})
+  technologies: TechnologiesDTO[];
 
-  @ApiProperty()
-  links_to_store_site: string[];
+  @ApiProperty({type: LinksToStoreSiteDTO, isArray: true})
+  links_to_store_site: LinksToStoreSiteDTO[];
 
   @ApiProperty()
   link_to_project_folder: string;
@@ -64,14 +89,14 @@ export class CreateProjectDto {
   @ApiProperty()
   link_to_presentation: string;
 
-  @ApiProperty()
-  links_to_case_behance_or_our_site: string[];
+  @ApiProperty({type: LinksToCaseBehanceDTO, isArray: true})
+  links_to_case_behance_or_our_site: LinksToCaseBehanceDTO[];
 
-  @ApiProperty({type: TeamsDTO, isArray: true})
-  teams: TeamsDTO[];
+  @ApiProperty({type: TeamWorkDirectionsDTO, isArray: true})
+  teams: TeamWorkDirectionsDTO[];
 
-  @ApiProperty()
-  directions_of_work: string[];
+  @ApiProperty({type: DirectionsOfWorkDTO, isArray: true})
+  directions_of_work: DirectionsOfWorkDTO[];
 
   @ApiProperty({type: NominationsDTO, isArray: true})
   nominations: NominationsDTO[];
