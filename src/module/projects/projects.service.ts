@@ -173,21 +173,44 @@ export class ProjectsService {
     }
   }
 
-  async findAll(sort: [string, "ASC"|"DESC"], range: [number, number], filter: [string, string], res: any): Promise<any> {
+  /*async findAll(sort: {field: string, order: "ASC"|"DESC"}, pagination: {page: number, perPage: number}, filter: {id: string}, res: any): Promise<any> {
     let query = await this.projectRepository.createQueryBuilder("project_entity");
     if (filter){
       query.where(":columnString LIKE :filterString")
-        .setParameters({filterString: '%' + filter[1] + '%', columnString: filter[0]});
+        .setParameters({filterString: '%' + filter.id + '%', columnString: "project_name"});
     }
-    if (range){
-      query.offset(range[0])
-        .limit(range[1]- range[0]);
+    if (pagination){
+      query.offset((pagination.page - 1) * pagination.perPage)
+        .limit(pagination.page * pagination.perPage - (pagination.page - 1) * pagination.perPage);
     }
     if (sort){
-      query.addOrderBy(sort[0], sort[1]);
+      query.addOrderBy(sort.field, sort.order);
     }
     let queryAndCount = await query.getManyAndCount();
     res.header("X-Total-Count", queryAndCount[1]);
+    return queryAndCount[0];
+  }*/
+
+  async findAll(sort: string, order: 'ASC'|'DESC', page: number, perPage: number, filter: string, res: any): Promise<any> {
+    console.log(sort, order, filter, page, perPage);
+
+    let query = await this.projectRepository.createQueryBuilder("project_entity");
+    if (filter){
+      query.where(":columnString LIKE :filterString")
+        .setParameters({filterString: '%' + filter + '%', columnString: "project_name"});
+    }
+    if (page && perPage){
+      query.offset((page - 1) * perPage)
+        .limit(perPage);
+    }
+    if (sort && order){
+      query.addOrderBy(sort, order);
+    }
+    let queryAndCount = await query.getManyAndCount();
+    res.header("X-Total-Count", queryAndCount[1]);
+
+    
+
     return queryAndCount[0];
   }
 
