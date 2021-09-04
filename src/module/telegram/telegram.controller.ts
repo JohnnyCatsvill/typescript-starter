@@ -20,7 +20,7 @@ export class TelegramController {
     return res.json(await this.telegramService.findAll(sort, range, filter, res));
   }
 
-  @Get(':id')
+  @Get(':id/show')
   async findOne(@Param('id') id: number) {
     return await this.telegramService.findOne(+id);
   }
