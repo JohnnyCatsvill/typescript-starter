@@ -18,7 +18,6 @@ export class AuthController {
   }
 
   @ApiBody({type: LoginOtherDto})
-  @UseGuards(LocalStrategy)
   @Post('login')
   async login(@Request() req: LoginOtherDto) {
     return this.authService.login(req);
