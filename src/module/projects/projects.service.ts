@@ -196,7 +196,7 @@ export class ProjectsService {
 
     let query = await this.projectRepository.createQueryBuilder("project_entity");
     if (filter){
-      query.where(":columnString LIKE :filterString")
+      query.where("project_name LIKE :filterString")
         .setParameters({filterString: '%' + filter + '%', columnString: "project_name"});
     }
     if (page && perPage){
