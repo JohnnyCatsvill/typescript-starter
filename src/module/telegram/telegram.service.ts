@@ -30,18 +30,18 @@ export class TelegramService {
     return { success: true };
   }
 
-  async findAll(sort: [string, "ASC"|"DESC"], range: [number, number], filter: [string, string], res: any): Promise<any> {
+  async findAll(sort: string, order: 'ASC'|'DESC', page: number, perPage: number, filter: string, res: any): Promise<any> {
     let query = await this.telegramRepository.createQueryBuilder("telegram_entity");
     if (filter){
-      query.where(":columnString LIKE :filterString")
-        .setParameters({filterString: '%' + filter[1] + '%', columnString: filter[0]});
+      query.where("title LIKE :filterString")
+        .setParameters({filterString: '%' + filter + '%'});
     }
-    if (range){
-      query.offset(range[0])
-        .limit(range[1]- range[0]);
+    if (page & perPage){
+      query.offset(page * perPage)
+        .limit(perPage);
     }
     if (sort){
-      query.addOrderBy(sort[0], sort[1]);
+      query.addOrderBy(sort, order);
     }
     let queryAndCount = await query.getManyAndCount();
     res.header("X-Total-Count", queryAndCount[1]);

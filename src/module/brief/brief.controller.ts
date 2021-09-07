@@ -15,9 +15,9 @@ export class BriefController {
   }
 
   @Get()
-  async findAll(@Query('sort') sort, @Query('range') range, @Query('filter') filter, @Res() res) {
+  async findAll(@Query('sort') sort, @Query('order') order, @Query('page') page, @Query('perPage') perPage, @Query('filter') filter, @Res() res) {
     res.set('Access-Control-Expose-Headers', 'X-Total-Count')
-    return res.json(await this.briefService.findAll(sort, range, filter, res));
+    return res.json(await this.briefService.findAll(sort, order, page, perPage, filter, res));
   }
 
   @Get(':id')

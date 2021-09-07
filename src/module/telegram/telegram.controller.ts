@@ -2,7 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, Put } fr
 import { TelegramService } from './telegram.service';
 import { CreateTelegramDto } from './dto/create-telegram.dto';
 import { UpdateTelegramDto } from './dto/update-telegram.dto';
-import { ApiTags } from "@nestjs/swagger";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
+import { findAllTelegramQuerryDTO } from "./dto/findAll-Telegramquerry.dto";
 
 @ApiTags('telegrams')
 @Controller('telegrams')
@@ -14,10 +15,11 @@ export class TelegramController {
     return this.telegramService.create(createTelegramDto);
   }
 
+  @ApiQuery({type: findAllTelegramQuerryDTO})
   @Get()
-  async findAll(@Query('sort') sort, @Query('range') range, @Query('filter') filter, @Res() res) {
+  async findAll(@Query('sort') sort, @Query('order') order, @Query('page') page, @Query('perPage') perPage, @Query('filter') filter, @Res() res) {
     res.set('Access-Control-Expose-Headers', 'X-Total-Count')
-    return res.json(await this.telegramService.findAll(sort, range, filter, res));
+    return res.json(await this.telegramService.findAll(sort, order, page, perPage, filter, res));
   }
 
   @Get(':id')
