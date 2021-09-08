@@ -1,5 +1,5 @@
 
-import { Controller, Request, Post, UseGuards, Body, Get } from "@nestjs/common";
+import { Controller, Request, Post, UseGuards, Body, Get, HttpException, HttpStatus } from "@nestjs/common";
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiTags, ApiHeader, ApiBearerAuth, ApiParam, ApiBasicAuth } from "@nestjs/swagger";
 import { LoginDto } from "./dto/login.dto";
@@ -22,10 +22,7 @@ export class AuthController {
       return this.authService.login(user);
     }
     else{
-      return {
-        "statusCode": 401,
-        "message": "UnauthorizedException"
-      };
+      throw new HttpException("UnauthorizedExveption", HttpStatus.UNAUTHORIZED);
     }
   }
 

@@ -4,6 +4,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ApiProperty, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { findAllProjectQuerryDTO } from "./dto/findAll-projectQuerry.dto";
+import { REQUEST } from "@nestjs/core";
 
 let x_count;
 
@@ -20,7 +21,7 @@ export class ProjectsController {
 
   @ApiQuery({type: findAllProjectQuerryDTO, required: false})
   @Get()
-  async findAll(@Query('sort') sort, @Query('order') order, @Query('page') page, @Query('perPage') perPage, @Query('filter') filter, @Res() res) {
+  async findAll(@Param('sort') sort, @Query('order') order, @Query('page') page, @Query('perPage') perPage, @Query('filter') filter, @Res() res,) {
     res.set('Access-Control-Expose-Headers', 'X-Total-Count')
     return res.json(await this.projectsService.findAll(sort, order, page, perPage, filter, res));
   }
