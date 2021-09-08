@@ -2,11 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, Header, 
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { ApiProperty, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
 import { findAllProjectQuerryDTO } from "./dto/findAll-projectQuerry.dto";
-import { REQUEST } from "@nestjs/core";
-
-let x_count;
 
 @ApiTags('projects')
 @Controller('projects')

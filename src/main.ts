@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('Project DB')
+    .setDescription('The best project DB storage')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

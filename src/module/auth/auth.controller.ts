@@ -1,11 +1,9 @@
 
 import { Controller, Request, Post, UseGuards, Body, Get, HttpException, HttpStatus } from "@nestjs/common";
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiTags, ApiHeader, ApiBearerAuth, ApiParam, ApiBasicAuth } from "@nestjs/swagger";
 import { LoginDto } from "./dto/login.dto";
 import { AuthService } from "./auth.service";
 import { JwtAuthGuard } from "./jwt-auth.guard";
-import { type } from "os";
 
 @ApiTags('auth')
 @Controller('auth')
@@ -24,13 +22,6 @@ export class AuthController {
     else{
       throw new HttpException("UnauthorizedExveption", HttpStatus.UNAUTHORIZED);
     }
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Get('authTest')
-  async smth(): Promise<String>{
-    return "test test 1 2 3";
   }
 
   @Post('login/create')

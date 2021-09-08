@@ -70,7 +70,6 @@ export class ProjectsService {
       for (const some of createProjectDto.technologies) {
         const technologyEntinity = new TechnologyEntity();
         technologyEntinity.technology = some.technology;
-        //technologyEntinity.projects = project;
         technologiesList.push(technologyEntinity);
       }
     }
@@ -81,7 +80,6 @@ export class ProjectsService {
         const clockEntinity = new ClockEntity();
         clockEntinity.clock = some.clock;
         clockEntinity.direction = some.direction;
-        //clockEntinity.projects = project;
         clocksList.push(clockEntinity);
       }
     }
@@ -91,7 +89,6 @@ export class ProjectsService {
       for (const some of createProjectDto.links_to_case_behance_or_our_site) {
         const linkCaseEntinity = new LinkCaseEntity();
         linkCaseEntinity.link_case = some.link_case;
-        //linkCaseEntinity.projects = project;
         caseBehanceList.push(linkCaseEntinity);
       }
     }
@@ -103,7 +100,6 @@ export class ProjectsService {
         nominationsEntinity.title = some.title;
         nominationsEntinity.description = some.description;
         nominationsEntinity.link = some.link;
-        //nominationsEntinity.projects = project;
         nominationsList.push(nominationsEntinity);
       }
     }
@@ -113,7 +109,6 @@ export class ProjectsService {
       for (const some of createProjectDto.links_to_store_site) {
         const storeSiteEntinity = new StoreSiteLinkEntity();
         storeSiteEntinity.link = some.link;
-        //storeSiteEntinity.projects = project;
         storeSiteList.push(storeSiteEntinity);
       }
     }
@@ -123,7 +118,6 @@ export class ProjectsService {
       for (const some of createProjectDto.directions_of_work) {
         const workDirectionsEntinity = new WorkDirectionEntity();
         workDirectionsEntinity.work_direction = some.work_direction;
-        //workDirectionsEntinity.projects = project;
         workDirectionsList.push(workDirectionsEntinity);
       }
     }
@@ -138,16 +132,8 @@ export class ProjectsService {
         for (const worker of some.workers) {
           const workerEntinity = new WorkerEntity();
           workerEntinity.worker = worker.worker;
-          /*try{
-            this.workerRepository.save(workerEntinity);
-          }
-          catch (e) {
-            console.log(e);
-            return {success: false};
-          }*/
           workerProjectsEntinity.workers.push(workerEntinity);
         }
-        //workerProjectsEntinity.projects = project;
         workerProjectsList.push(workerProjectsEntinity);
       }
     }
@@ -172,24 +158,6 @@ export class ProjectsService {
       return {success: false};
     }
   }
-
-  /*async findAll(sort: {field: string, order: "ASC"|"DESC"}, pagination: {page: number, perPage: number}, filter: {id: string}, res: any): Promise<any> {
-    let query = await this.projectRepository.createQueryBuilder("project_entity");
-    if (filter){
-      query.where(":columnString LIKE :filterString")
-        .setParameters({filterString: '%' + filter.id + '%', columnString: "project_name"});
-    }
-    if (pagination){
-      query.offset((pagination.page - 1) * pagination.perPage)
-        .limit(pagination.page * pagination.perPage - (pagination.page - 1) * pagination.perPage);
-    }
-    if (sort){
-      query.addOrderBy(sort.field, sort.order);
-    }
-    let queryAndCount = await query.getManyAndCount();
-    res.header("X-Total-Count", queryAndCount[1]);
-    return queryAndCount[0];
-  }*/
 
   async findAll(sort: string, order: "ASC"|"DESC", page: number, perPage: number, filter: string, res: any): Promise<any> {
     console.log(sort, order, filter, page, perPage);
