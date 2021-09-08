@@ -3,7 +3,7 @@ import { TelegramService } from './telegram.service';
 import { CreateTelegramDto } from './dto/create-telegram.dto';
 import { UpdateTelegramDto } from './dto/update-telegram.dto';
 import { ApiQuery, ApiTags } from "@nestjs/swagger";
-import { findAllTelegramQuerryDTO } from "./dto/findAll-Telegramquerry.dto";
+import { findAllTelegramQuerryDTO } from "./dto/findAll-TelegramQuerry.dto";
 
 @ApiTags('telegrams')
 @Controller('telegrams')

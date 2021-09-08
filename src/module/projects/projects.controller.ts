@@ -21,7 +21,7 @@ export class ProjectsController {
 
   @ApiQuery({type: findAllProjectQuerryDTO, required: false})
   @Get()
-  async findAll(@Param('sort') sort, @Query('order') order, @Query('page') page, @Query('perPage') perPage, @Query('filter') filter, @Res() res,) {
+  async findAll(@Query('sortq') sort, @Query('order') order, @Query('page') page, @Query('perPage') perPage, @Query('filter') filter, @Res() res,) {
     res.set('Access-Control-Expose-Headers', 'X-Total-Count')
     return res.json(await this.projectsService.findAll(sort, order, page, perPage, filter, res));
   }

@@ -191,13 +191,13 @@ export class ProjectsService {
     return queryAndCount[0];
   }*/
 
-  async findAll(sort: string, order: 'ASC'|'DESC', page: number, perPage: number, filter: string, res: any): Promise<any> {
+  async findAll(sort: string, order: "ASC"|"DESC", page: number, perPage: number, filter: string, res: any): Promise<any> {
     console.log(sort, order, filter, page, perPage);
 
     let query = await this.projectRepository.createQueryBuilder("project_entity");
     if (filter){
       query.where("project_name LIKE :filterString")
-        .setParameters({filterString: '%' + filter + '%', columnString: "project_name"});
+        .setParameters({filterString: '%' + filter + '%'});
     }
     if (page && perPage){
       query.offset((page - 1) * perPage)
@@ -208,8 +208,6 @@ export class ProjectsService {
     }
     let queryAndCount = await query.getManyAndCount();
     res.header("X-Total-Count", queryAndCount[1]);
-
-    
 
     return queryAndCount[0];
   }
