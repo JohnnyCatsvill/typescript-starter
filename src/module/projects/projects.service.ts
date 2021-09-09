@@ -14,6 +14,7 @@ import {
   TeamEntity,
   WorkerEntity
 } from "./entities/project.entity";
+import e from 'express';
 
 @Injectable()
 export class ProjectsService {
@@ -162,10 +163,33 @@ export class ProjectsService {
   async findAll(sort: string, order: "ASC"|"DESC", page: number, perPage: number, filter: string, res: any): Promise<any> {
     console.log(sort, order, filter, page, perPage);
 
+    filter = filter.replace('{', "").replace('}', "");
+
     let query = await this.projectRepository.createQueryBuilder("project_entity");
     if (filter){
-      query.where("project_name LIKE :filterString")
-        .setParameters({filterString: '%' + filter + '%'});
+
+      let source = filter.split(":")[0].replace('"', "").replace('"', "");
+      let value = filter.split(":")[1].replace('"', "").replace('"', "");
+      console.log("/" + source + "/", "/" + value + "/");
+
+      if (source == "client"){
+        query.where("client LIKE :filterString")
+        .setParameters({filterString: '%' + value + '%'});
+      }
+      else if (source == "project_name"){
+        query.where("project_name LIKE :filterString")
+        .setParameters({filterString: '%' + value + '%'});
+      }
+      else if (source == "nda"){
+        if (value == "true"){
+          value = "1";
+        }
+        else{
+          value = "0";
+        }
+        query.where("nda LIKE :filterString")
+        .setParameters({filterString: '%' + value + '%'});
+      }
     }
     if (page && perPage){
       query.offset((page - 1) * perPage)
