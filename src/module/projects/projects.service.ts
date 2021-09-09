@@ -163,33 +163,37 @@ export class ProjectsService {
   async findAll(sort: string, order: "ASC"|"DESC", page: number, perPage: number, filter: string, res: any): Promise<any> {
     console.log(sort, order, filter, page, perPage);
 
-    filter = filter.replace('{', "").replace('}', "");
+    filter = filter.replace('{', "").replace('}', "").replace(/"/gi, "");
+    let filterList = filter.split(",");
 
     let query = await this.projectRepository.createQueryBuilder("project_entity");
     if (filter){
 
-      let source = filter.split(":")[0].replace('"', "").replace('"', "");
-      let value = filter.split(":")[1].replace('"', "").replace('"', "");
-      console.log("/" + source + "/", "/" + value + "/");
+      for(let filterElem of filterList){
 
-      if (source == "client"){
-        query.where("client LIKE :filterString")
-        .setParameters({filterString: '%' + value + '%'});
-      }
-      else if (source == "project_name"){
-        query.where("project_name LIKE :filterString")
-        .setParameters({filterString: '%' + value + '%'});
-      }
-      else if (source == "nda"){
-        if (value == "true"){
-          value = "1";
+        let source = filterElem.split(":")[0];
+        let value = filterElem.split(":")[1];
+
+        if (source == "client"){
+          query.andWhere("client LIKE :filterStringClient")
+          .setParameters({filterStringClient: '%' + value + '%'});
         }
-        else{
-          value = "0";
+        else if (source == "project_name"){
+          query.andWhere("project_name LIKE :filterStringProject")
+          .setParameters({filterStringProject: '%' + value + '%'});
         }
-        query.where("nda LIKE :filterString")
-        .setParameters({filterString: '%' + value + '%'});
+        else if (source == "nda"){
+          if (value == "true"){
+            value = "1";
+          }
+          else{
+            value = "0";
+          }
+          query.andWhere("nda LIKE :filterStringNda")
+          .setParameters({filterStringNda: '%' + value + '%'});
+        }
       }
+      
     }
     if (page && perPage){
       query.offset((page - 1) * perPage)
