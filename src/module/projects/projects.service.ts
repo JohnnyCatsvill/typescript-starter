@@ -130,10 +130,12 @@ export class ProjectsService {
         workerProjectsEntinity.workers = [];
         workerProjectsEntinity.team_work_direction = some.team_work_direction;
 
-        for (const worker of some.workers) {
-          const workerEntinity = new WorkerEntity();
-          workerEntinity.worker = worker.worker;
-          workerProjectsEntinity.workers.push(workerEntinity);
+        if(some.workers){
+          for (const worker of some.workers) {
+            const workerEntinity = new WorkerEntity();
+            workerEntinity.worker = worker.worker;
+            workerProjectsEntinity.workers.push(workerEntinity);
+          }
         }
         workerProjectsList.push(workerProjectsEntinity);
       }

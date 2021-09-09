@@ -31,10 +31,29 @@ export class TelegramService {
   }
 
   async findAll(sort: string, order: 'ASC'|'DESC', page: number, perPage: number, filter: string, res: any): Promise<any> {
+    
+    filter = filter.replace('{', "").replace('}', "").replace(/"/gi, "");
+    let filterList = filter.split(",");
+
     let query = await this.telegramRepository.createQueryBuilder("telegram_entity");
+
     if (filter){
-      query.where("title LIKE :filterString")
-        .setParameters({filterString: '%' + filter + '%'});
+
+      for(let filterElem of filterList){
+
+        let source = filterElem.split(":")[0];
+        let value = filterElem.split(":")[1];
+
+        if (source == "title"){
+          query.andWhere("title LIKE :filterStringClient")
+          .setParameters({filterStringTitle: '%' + value + '%'});
+        }
+        else if (source == "description"){
+          query.andWhere("description LIKE :filterStringProject")
+          .setParameters({filterStringDescription: '%' + value + '%'});
+        }
+      }
+      
     }
     if (page & perPage){
       query.offset(page * perPage)
